@@ -1,0 +1,37 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:readMatlabData.load_data {
+        start: 0,
+        stop: 80
+    },
+    model: !obj:pylearn2.models.softmax_regression.SoftmaxRegression {
+        n_classes: 2,
+        irange: 0.01,
+        nvis: 2,
+        batch_size: 5
+    },
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD { 
+        learning_rate: 0.05,
+        monitoring_dataset:
+        {
+            'train' : *train,
+            'valid' : !obj:readMatlabData.load_data {
+                start: 80,
+                stop: 90
+            },
+            'test'  : !obj:readMatlabData.load_data {
+                start: 90,
+                stop: 100
+            },
+        },
+        termination_criterion: !obj:pylearn2.termination_criteria.And {
+            criteria: [
+                !obj:pylearn2.termination_criteria.MonitorBased {
+                    channel_name: "valid_y_misclass"
+                },
+                !obj:pylearn2.termination_criteria.EpochCounter {
+                    max_epochs: 10000
+                }
+            ]
+        }
+    },
+}
