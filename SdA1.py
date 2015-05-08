@@ -107,6 +107,7 @@ class SdA_MLP_network(object):
 		
 		fn0 = self.layer0.pretraining(inputData, batch_size)
 
+		print 'Pretraining capa 0...'
 		for epoch in xrange(pretraining_epochs):
 			c = []
 			for batch_index in xrange(n_train_batches):
@@ -114,14 +115,16 @@ class SdA_MLP_network(object):
 					index=batch_index,
 					corruption=self.corruption_levels[0],
 					lr=pretrain_lr))
-			print 'Pre-training capa 0, epoch %d, cost %f' % (epoch, numpy.mean(c))
+			#print 'Pre-training capa 0, epoch %d, cost %f' % (epoch, numpy.mean(c))
 
+		print 'Resultado final capa 0: coste %f' % (numpy.mean(c))
 		output = self.layer0.getOut(inputData, inputData.get_value().shape[0])
 
 		out = theano.shared(numpy.asarray(output, dtype=theano.config.floatX), borrow=True)
 
 		fn1 = self.layer1.pretraining(out, batch_size)
 
+		print 'Pretraining capa 1...'
 		for epoch in xrange(pretraining_epochs):
 			c = []
 			for batch_index in xrange(n_train_batches):
@@ -129,7 +132,9 @@ class SdA_MLP_network(object):
 					index=batch_index,
 					corruption=self.corruption_levels[1],
 					lr=pretrain_lr))
-			print 'Pre-training capa 1, epoch %d, cost %f' % (epoch, numpy.mean(c))
+			#print 'Pre-training capa 1, epoch %d, cost %f' % (epoch, numpy.mean(c))
+
+		print 'Resultado final capa 1: coste %f' % (numpy.mean(c))
 
 	def fine_tune(self, inputData, outputData, batch_size, learning_rate):
 		# Indice neceario
@@ -175,7 +180,7 @@ class SdA_MLP_network(object):
 			minibatch_avg_cost = 0
 			for minibatch_index in xrange(n_train_batches):
 				minibatch_avg_cost = minibatch_avg_cost + train_fn(minibatch_index)
-			print 'Training MLP, epoch %d, cost %f' % (epoch, minibatch_avg_cost/n_train_batches)
+			#print 'Training MLP, epoch %d, cost %f' % (epoch, minibatch_avg_cost/n_train_batches)
 			coste.append(minibatch_avg_cost/n_train_batches)
 			epoca.append(epoch)
 		plt.plot(epoca, coste)
